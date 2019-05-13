@@ -1,0 +1,242 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage[sort,numbers]{natbib}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+%\usepackage{epstopdf}
+%\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+% https://tex.stackexchange.com/questions/362195/nature-include-graphics
+\makeatletter
+\let\saved@includegraphics\includegraphics
+\AtBeginDocument{\let\includegraphics\saved@includegraphics}
+\renewenvironment*{figure}{\@float{figure}}{\end@float}
+\makeatother
+
+\renewcommand{\baselinestretch}{1.25}
+
+
+\title{A reproducible effect size is more useful than an irreproducible hypothesis test to analyze high throughput sequencing datasets}
+
+\author{Andrew D. Fernandes\,$^{\text{1}}$ , Michael T.H.Q. Vu\,$^{\text{1}}$, Lisa-Monique Edward\,$^{\text{1}}$, \\
+Jean M. Macklaim,$^{\text{2}}$ and Gregory B. Gloor\,$^{\text{1}*}$}
+
+%\date{}                                           % Activate to display a given date or no date
+
+\begin{document}
+
+\maketitle
+
+\noindent{$^{\text{\sf 1}}$Department of Biochemistry, University of Western Ontario, London, N6A 5C1, Canada and \\
+\noindent$^{\text{\sf 2}}$DNA GenoTek, Ottawa.}\\
+\noindent{$^\ast$To whom correspondence should be addressed.}
+
+\input{text/abstract.tex}
+
+\section*{Introduction}
+
+\input{text/introduction.tex}
+
+\section*{Approach and Methods}
+
+\input{text/approach.tex}
+
+\input{text/methods.tex}
+
+\section*{Results and Conclusions}
+
+
+\input{text/results.tex}
+
+\input{text/conclusions.tex}
+
+\section*{Authors contributions}
+AF devised the $\mathrm{d_{NEF}}$ metric. MTHQV and LM did simulation studies to characterize the metric. JM characterized the properties of the metric in real data. GBG characterized the metric, did final simulation studies, wrote the first draft manuscript and supplement. All authors provided input into the final form and substance of the manuscript.
+
+%\section*{}
+%\subsection*{}
+\section*{References}
+\bibliographystyle{unsrtnat}
+
+\begin{thebibliography}{}
+
+\bibitem[Aitchison(1986)Aitchison]{aitchison:1986}
+Aitchison, J. (1986).
+\newblock {\em The Statistical Analysis of Compositional Data\/}.
+\newblock Chapman \& Hall.
+
+\bibitem[Bian {\em et~al.}(2017)Bian, Gloor, Gong, Jia, Zhang, Hu, Zhang,
+  Zhang, Zhou, Zhang, Burton, Reid, Xiao, Zeng, Yang, and Li]{bian:2017}
+Bian, G., Gloor, G.~B., Gong, A., Jia, C., Zhang, W., Hu, J., Zhang, H., Zhang,
+  Y., Zhou, Z., Zhang, J., Burton, J.~P., Reid, G., Xiao, Y., Zeng, Q., Yang,
+  K., and Li, J. (2017).
+\newblock The gut microbiota of healthy aged chinese is similar to that of the
+  healthy young.
+\newblock {\em mSphere\/}, {\bf 2}(5), e00327--17.
+
+\bibitem[Coe(2002)Coe]{coe2002s}
+Coe, R. (2002).
+\newblock It's the effect size, stupid: What effect size is and why it is
+  important.
+
+\bibitem[Colquhoun(2014)Colquhoun]{Colquhoun:2014aa}
+Colquhoun, D. (2014).
+\newblock An investigation of the false discovery rate and the
+  misinterpretation of p-values.
+\newblock {\em R Soc Open Sci\/}, {\bf 1}(3), 140216.
+
+\bibitem[Cui and Churchill(2003)Cui and Churchill]{Cui:2003aa}
+Cui, X. and Churchill, G.~A. (2003).
+\newblock Statistical tests for differential expression in cdna microarray
+  experiments.
+\newblock {\em Genome Biol\/}, {\bf 4}(4), 210.1 -- 210.10.
+
+\bibitem[Cumming(2008)Cumming]{Cumming:2008aa}
+Cumming, G. (2008).
+\newblock Replication and p intervals: p values predict the future only
+  vaguely, but confidence intervals do much better.
+\newblock {\em Perspect Psychol Sci\/}, {\bf 3}(4), 286--300.
+
+\bibitem[Fernandes {\em et~al.}(2013)Fernandes, Macklaim, Linn, Reid, and
+  Gloor]{fernandes:2013}
+Fernandes, A.~D., Macklaim, J.~M., Linn, T.~G., Reid, G., and Gloor, G.~B.
+  (2013).
+\newblock Anova-like differential expression (aldex) analysis for mixed
+  population rna-seq.
+\newblock {\em PLoS One\/}, {\bf 8}(7), e67019.
+
+\bibitem[Fernandes {\em et~al.}(2014)Fernandes, Reid, Macklaim, McMurrough,
+  Edgell, and Gloor]{fernandes:2014}
+Fernandes, A.~D., Reid, J.~N., Macklaim, J.~M., McMurrough, T.~A., Edgell,
+  D.~R., and Gloor, G.~B. (2014).
+\newblock Unifying the analysis of high-throughput sequencing datasets:
+  characterizing {RNA}-seq, 16{S} r{RNA} gene sequencing and selective growth
+  experiments by compositional data analysis.
+\newblock {\em Microbiome\/}, {\bf 2}, 15.1--15.13.
+
+\bibitem[Giguere {\em et~al.}(2019)Giguere, Macklaim, and Gloor]{omicplot}
+Giguere, D., Macklaim, J., and Gloor, G. (2019).
+\newblock omicplotr: Visual exploration of omic datasets using a shiny app.
+\newblock Bioconductor v1.4.0.
+
+\bibitem[Gloor {\em et~al.}(2016a)Gloor, Macklaim, Vu, and
+  Fernandes]{gloorAJS:2016}
+Gloor, G.~B., Macklaim, J.~M., Vu, M., and Fernandes, A.~D. (2016a).
+\newblock Compositional uncertainty should not be ignored in high-throughput
+  sequencing data analysis.
+\newblock {\em Austrian Journal of Statistics\/}, {\bf 45}, 73--87.
+
+\bibitem[Gloor {\em et~al.}(2016b)Gloor, Macklaim, and Fernandes]{gloor:effect}
+Gloor, G.~B., Macklaim, J.~M., and Fernandes, A.~D. (2016b).
+\newblock Displaying variation in large datasets: Plotting a visual summary of
+  effect sizes.
+\newblock {\em Journal of Computational and Graphical Statistics\/}, {\bf
+  25}(3C), 971--979.
+
+\bibitem[Gloor {\em et~al.}(2017)Gloor, Macklaim, Pawlowsky-Glahn, and
+  Egozcue]{gloorFrontiers:2017}
+Gloor, G.~B., Macklaim, J.~M., Pawlowsky-Glahn, V., and Egozcue, J.~J. (2017).
+\newblock Microbiome datasets are compositional: And this is not optional.
+\newblock {\em Front Microbiol\/}, {\bf 8}, 2224.
+
+\bibitem[Halsey {\em et~al.}(2015)Halsey, Curran-Everett, Vowler, and
+  Drummond]{Halsey:2015aa}
+Halsey, L.~G., Curran-Everett, D., Vowler, S.~L., and Drummond, G.~B. (2015).
+\newblock The fickle p value generates irreproducible results.
+\newblock {\em Nat Methods\/}, {\bf 12}(3), 179--85.
+
+\bibitem[Hawinkel {\em et~al.}(2018)Hawinkel, Mattiello, Bijnens, and
+  Thas]{hawinkel2017}
+Hawinkel, S., Mattiello, F., Bijnens, L., and Thas, O. (2018).
+\newblock A broken promise : microbiome differential abundance methods do not
+  control the false discovery rate.
+\newblock {\em BRIEFINGS IN BIOINFORMATICS\/}.
+
+\bibitem[Ioannidis(2005)Ioannidis]{Ioannidis:2005aa}
+Ioannidis, J. P.~A. (2005).
+\newblock Why most published research findings are false.
+\newblock {\em PLoS Med\/}, {\bf 2}(8), e124.
+
+\bibitem[Kaul {\em et~al.}(2017)Kaul, Mandal, Davidov, and
+  Peddada]{Kaul:2017aa}
+Kaul, A., Mandal, S., Davidov, O., and Peddada, S.~D. (2017).
+\newblock Analysis of microbiome data in the presence of excess zeros.
+\newblock {\em Front Microbiol\/}, {\bf 8}, 2114.
+
+\bibitem[Lovell {\em et~al.}(2015)Lovell, Pawlowsky-Glahn, Egozcue, Marguerat,
+  and B{\"a}hler]{Lovell:2015}
+Lovell, D., Pawlowsky-Glahn, V., Egozcue, J.~J., Marguerat, S., and B{\"a}hler,
+  J. (2015).
+\newblock Proportionality: a valid alternative to correlation for relative
+  data.
+\newblock {\em PLoS Comput Biol\/}, {\bf 11}(3), e1004075.
+
+\bibitem[Macklaim {\em et~al.}(2013)Macklaim, Fernandes, Di~Bella, Hammond,
+  Reid, and Gloor]{macklaim:2013}
+Macklaim, J.~M., Fernandes, A.~D., Di~Bella, J.~M., Hammond, J.-A., Reid, G.,
+  and Gloor, G.~B. (2013).
+\newblock Comparative meta-rna-seq of the vaginal microbiota and differential
+  expression by lactobacillus iners in health and dysbiosis.
+\newblock {\em Microbiome\/}, {\bf 1}(1), 12.
+
+\bibitem[Nakagawa(2004)Nakagawa]{shinichi:2004}
+Nakagawa, S. (2004).
+\newblock A farewell to bonferroni: the problems of low statistical power and
+  publication bias.
+\newblock {\em Behavioral Ecology\/}, {\bf 15}(6), 1044--1045.
+
+\bibitem[Nelson {\em et~al.}(2015)Nelson, Borgogna, Brotman, Ravel, Walk, and
+  Yeoman]{nelson:2015vaginal}
+Nelson, T.~M., Borgogna, J.-L.~C., Brotman, R.~M., Ravel, J., Walk, S.~T., and
+  Yeoman, C.~J. (2015).
+\newblock Vaginal biogenic amines: biomarkers of bacterial vaginosis or
+  precursors to vaginal dysbiosis?
+\newblock {\em Frontiers in physiology\/}, {\bf 6}.
+
+\bibitem[Schurch {\em et~al.}(2016)Schurch, Schofield, Gierli{\'n}ski, Cole,
+  Sherstnev, Singh, Wrobel, Gharbi, Simpson, Owen-Hughes, Blaxter, and
+  Barton]{Schurch:2016aa}
+Schurch, N.~J., Schofield, P., Gierli{\'n}ski, M., Cole, C., Sherstnev, A.,
+  Singh, V., Wrobel, N., Gharbi, K., Simpson, G.~G., Owen-Hughes, T., Blaxter,
+  M., and Barton, G.~J. (2016).
+\newblock How many biological replicates are needed in an rna-seq experiment
+  and which differential expression tool should you use?
+\newblock {\em RNA\/}, {\bf 22}(6), 839--51.
+
+\bibitem[Soneson and Delorenzi(2013)Soneson and Delorenzi]{Soneson:2013}
+Soneson, C. and Delorenzi, M. (2013).
+\newblock A comparison of methods for differential expression analysis of
+  {RNA-seq} data.
+\newblock {\em BMC Bioinformatics\/}, {\bf 14}, 91.
+
+\bibitem[Thorsen {\em et~al.}(2016)Thorsen, Brejnrod, Mortensen, Rasmussen,
+  Stokholm, Al-Soud, S{\o}rensen, Bisgaard, and Waage]{Thorsen:2016aa}
+Thorsen, J., Brejnrod, A., Mortensen, M., Rasmussen, M.~A., Stokholm, J.,
+  Al-Soud, W.~A., S{\o}rensen, S., Bisgaard, H., and Waage, J. (2016).
+\newblock Large-scale benchmarking reveals false discoveries and count
+  transformation sensitivity in 16{S} r{RNA} gene amplicon data analysis
+  methods used in microbiome studies.
+\newblock {\em Microbiome\/}, {\bf 4}(1), 62.
+
+\bibitem[Tsilimigras and Fodor(2016)Tsilimigras and Fodor]{Tsilimigras:2016aa}
+Tsilimigras, M. C.~B. and Fodor, A.~A. (2016).
+\newblock Compositional data analysis of the microbiome: fundamentals, tools,
+  and challenges.
+\newblock {\em Ann Epidemiol\/}, {\bf 26}(5), 330--5.
+
+\bibitem[Weiss {\em et~al.}(2017)Weiss, Xu, Peddada, Amir, Bittinger, Gonzalez,
+  Lozupone, Zaneveld, V{\'a}zquez-Baeza, Birmingham, Hyde, and
+  Knight]{Weiss:2017aa}
+Weiss, S., Xu, Z.~Z., Peddada, S., Amir, A., Bittinger, K., Gonzalez, A.,
+  Lozupone, C., Zaneveld, J.~R., V{\'a}zquez-Baeza, Y., Birmingham, A., Hyde,
+  E.~R., and Knight, R. (2017).
+\newblock Normalization and microbial differential abundance strategies depend
+  upon data characteristics.
+\newblock {\em Microbiome\/}, {\bf 5}(1), 27.
+
+\end{thebibliography}
+
+\end{document}  
