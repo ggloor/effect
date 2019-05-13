@@ -1,6 +1,3 @@
-# data from code/Fu_null_data.r
-load("data/list.null.Rdata")
-load("data/list.one.Rdata")
 
 ### FIGURE 1 in paper
 #pdf("null-model.pdf", height=8, width=7)
