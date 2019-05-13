@@ -1,0 +1,6 @@
+data/*.Rdata
+data/*.*
+*.dvi
+*.log
+*.txt
+*.bib
