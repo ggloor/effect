@@ -1,6 +1,6 @@
 # reqires functions from analyze_subsets.R
 
-source("code/analyze_subsets.R")
+#source("code/analyze_subsets.R")
 
 #pdf("yeast_TPFP.pdf", height=10,width=6)
 setEPS()

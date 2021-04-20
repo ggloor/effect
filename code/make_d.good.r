@@ -4,7 +4,7 @@
 # testing tp, fp, tn, fn as replicate number by ALDEx2 effect
 library(CoDaSeq)
 # read in the dataset
-d.agg <- read.table("data/barton_agg.tsv", sep="\t", header=T, row.names=1)
+d.agg <- read.table("~/Documents/0_git/effect/data/barton_agg.tsv", sep="\t", header=T, row.names=1)
 
 # get the outliers from each group. See codaSeq.outlier function
 # get WT indices

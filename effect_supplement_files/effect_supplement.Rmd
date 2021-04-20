@@ -3,7 +3,7 @@ title: "Supplementary figures and code"
 author: "Greg Gloor"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 geometry: margin=2cm
-bibliography: bibdesk_refs.bib
+bibliography: /Users/ggloor/Library/texmf/bibtex/bib/bibdesk_refs.bib
 csl: /Users/ggloor/Documents/0_git/csl_styles/bioinformatics.csl
 output:
     pdf_document:
@@ -33,6 +33,7 @@ We will need the following R packages and add-ons (`R-block-1`). The code chunk 
 2. Rmarkdown (CRAN)
 3. ALDEx2 (Bioconductor)
 4. CoDaSeq (github.com/ggloor/CoDaSeq)
+5. distEffect (github.com/ggloor/distEffect)
 5. source('code/setup.r')
 
 ```{r R-block-1, results="hide", echo=F, message=F, error=F, warnings=F}
@@ -44,9 +45,9 @@ We will need the following R packages and add-ons (`R-block-1`). The code chunk 
 # rmarkdown::render('effect_supplement.Rmd')
 # commands to load libraries and datasets
 library(knitr)
-source('code/setup.r') # common datasets
+source('~/Documents/0_git/effect/effect/code/setup.r') # common datasets
 #source('code/plots.r')
-source('code/analyze_subsets.R')
+source('~/Documents/0_git/effect/effect/code/analyze_subsets.R')
 ```
 
 ## Datasets
@@ -70,59 +71,42 @@ From an R command prompt you can compile this document into PDF if you have \LaT
 Cohen's d, and similar statistics of a standardized mean difference (here-after effect size), use summary statistics to estimate the effect size [@Hedges:1985;@cohen_effect]. The standard equation is in equation 1 and broadly speaking  an  effect size of this type is the ratio of the difference $\delta$ and the dispersion $\sigma$ of two datasets.
 
 \begin{equation}
-    \theta = \frac{\mu_a - \mu_b}{\sigma} = \frac{\delta}{\sigma}
+    z = \frac{\mu_a - \mu_b}{\sigma} = \frac{\delta}{\sigma}
     \label{effect}
 \end{equation}
 
-In equation 1 all values are summary statistics from distributions A and B, and the utility of $\theta$ thus depends upon how well the assumptions of each summary statistic fits the underlying distributions.
+In equation 1 all values are summary statistics from distributions $a$ and $b$, and the utility of $z$ thus depends upon how well the assumptions of each summary statistic fits the underlying distributions. If $z$ is calculated from the mean and standard deviation of a Normal distribution, then $z$ is the number of $z$ scores that separate the two mean values. 
 
 ## Effect size vs Difference
 
-```{r volcvseff, echo=F, fig.height=3, fig.width=7, fig.cap="The relationship between a p-value and the elements that are used to calculate the p-value, $\\delta$ and $\\sigma$ are shown in the left two panels labelled Volcano and Geyser. The relationship between a p-value and $\\theta$ is in the third panel, labelled Mountain. The arrow locates the feature with the largest magnitude of change, and the square bracket locates the feature with the largest effect size and lowest p-value."}
-par(mfrow=c(1,3), cex.lab=1.5)
-plot(ref.set.ty[[1]]$diff.btw, ref.set.ty[[1]]$we.ep + 1e-310, pch=19, col=rgb(0,0,0,0.1), log="y", main="Volcano", xlab=expression(delta), ylab="p-value")
-text(-7.5, 1e-61, labels="<")
-text(-3.9, 1e-99, labels="]")
-plot(ref.set.ty[[1]]$diff.win, ref.set.ty[[1]]$we.ep + 1e-310, pch=19, col=rgb(0,0,0,0.1), log="y", main="Geyser", xlab=expression(sigma), ylab="p-value")
-text(4.9, 1e-61, labels="<")
-text(2, 1e-99, labels="]")
-plot(ref.set.ty[[1]]$effect, ref.set.ty[[1]]$we.ep + 1e-310, pch=19, col=rgb(0,0,0,0.1), log="y", main="Mountain", xlab="Ed", ylab="p-value")
-text(-1.5, 1e-61, labels="<")
-text(-2.1, 1e-99, labels="]")
-```
+It is worth pointing out that a p-value is not a measure of magnitude of change (or difference), nor is a p-value a standard measure of effect size. Nevertheless, both p-values and difference are widely used in the high throughput sequencing literature as proxies for effect size. The most obvious example of this is when investigators use a Volcano plot which shows the relationship between p-values and  the difference between groups  [@Cui:2003aa].
 
-It is worth pointing out that a p-value is not a measure of magnitude of change (or difference), nor is a p-value a measure of effect size. Nevertheless, both p-values and difference are widely used in the high throughput sequencing literature as proxies for effect size. The most obvious example of this is when investigators use a Volcano plot which shows the relationship between p-values and  the difference between groups  [@Cui:2003aa].
-
-Recall that one common way a p-value is calculated is from the t-statistic which has the general form shown in equation 2. Comparing equation 1 and equation 2 we see that the denominator is different; $\sigma$ is the denominator when calculating $\theta$, and the  square root of $\sigma$ divided by the sample size $\mathrm{N}$ is the denominator when calculating $t$. Thus, p-values are not stable estimates of effect size, but rather are strongly dependent on sample size.
+Recall that one common way a p-value is calculated is from the t-statistic which has the general form shown in equation 2. Comparing equation 1 and equation 2 we see that the denominator is different; $\sigma$ is the denominator when calculating $z$, and the  square root of $\sigma$ divided by the sample size $\mathrm{N}$ is the denominator when calculating $t$. Thus, p-values are not stable estimates of effect size, but rather are strongly dependent on sample size.
 
 \begin{equation}
     t = \frac{\mu_a - \mu_b}{\sqrt{\sigma / \mathrm{N}}} = \frac{\delta}{\sqrt{\sigma / \mathrm{N}}}
     \label{ttest}
 \end{equation}
 
+## The distribution effect size ($\mathbb{E}$)
 
-The Volcano plot in Figure 1 shows the relationship between p-values and $\sigma$ or $\delta$, and between p-values and $\theta$. We see that the relationship between p-values and $\delta$ (difference) appears to be relatively strong in the Volcano plot. However, note that there is considerable scatter around the relationship, such that the feature with the largest difference (denoted by the <), does not have the lowest p-value. This is troubling, and the reason for this becomes evident when we examine the 'Geyser' plot which shows that this feature has a very large dispersion. Finally, we can see in the 'Mountain' plot that the feature has a large, but not the largest standardized mean difference. Conversely, the feature with the lowest p-value (denoted by the ]) does not have the largest $\delta$, but has a combination of a large $\delta$ and a small $\sigma$. This is the information we actually want to determine, and we can clearly see that this feature has the largest absolute effect size.
+We now introduce and demonstrate the properties of the $\mathbb{E}$. The metric was first developed  and used as a convenience for meta-RNAseq [@fernandes:2013; @macklaim:2013] and later for microbiome analyses [eg. @fernandes:2014;@bian:2017], however, these publications did not investigate its properties. The purpose of $\mathbb{E}$ is to determine the standardized difference between two distributions, rather than the standardized difference between the means (or midpoints) of the distributions. Let us briefly explain the difference.
 
-
-
-## The distribution effect size ($\mathcal{E}_{d}$)
-
-We now demonstrate the properties of the $\mathcal{E}_{d}$. The metric was first developed  and used as a convenience for meta-RNAseq [@fernandes:2013; @macklaim:2013] and later for microbiome analyses [eg. @fernandes:2014;@bian:2017], however, these publications did not investigate its properties. The purpose of $\mathcal{E}_{d}$ is to determine the standardized difference between two distributions, rather than the standardized difference between the means (or midpoints) of the distributions. Let us briefly explain the difference.
-
-The approach taken by $\mathcal{E}_{d}$ is to calculate the median of the standardized difference of the distributions, $\vec{\varepsilon}$. We will use vector format and start with our two distributions represented as $\vec{a}$ and $\vec{b}$. The $\mathcal{E}_{d}$ metric is calculated as in equation \ref{Fe} from the outputs of the prior equations 3 and 4. Note that both the difference and dispersion estimates are  vectors and not point estimates.
+The approach taken by $\mathbb{E}$ is to calculate the median of the standardized difference of the distributions, $\vec{\varepsilon}$. We will use vector format and start with our two distributions represented as $\vec{a}$ and $\vec{b}$. The $\mathbb{E}$ metric is calculated as in equation \ref{Fe} from the outputs of the prior equations 3 and 4. Note that both the difference and dispersion estimates are  vectors and not point estimates.
 
 \begin{align}
     \vec{\delta} = \vec{a} - \vec{b}\\
-    \vec{\sigma} =  max \{ \lvert \vec{A} - \boldsymbol{\rho} \vec{A}  \rvert ,\lvert \vec{B} -\boldsymbol{\rho} \vec{B} \rvert \}\\
-  \vec{\varepsilon} = med \bigg\{ \frac{ \vec{\delta} }{ \vec{\sigma} }\bigg\}
+    \vec{\sigma} =  max \{ \lvert \vec{a} - \boldsymbol{\rho} \vec{a}  \rvert ,\lvert \vec{b} -\boldsymbol{\rho} \vec{b} \rvert \}\\
+  \vec{\varepsilon} =  \frac{ \vec{\delta} }{ \vec{\sigma} }\\
+  \mathcal{Z} = \mathrm{med} (\vec{\varepsilon})
   \label{Fe}
 \end{align}
 
-In equations 3-5, we use $max$ to refer to the maximum value at each position in the vector, $med$ to refer to the median of the vector, $\lvert~\rvert$ to indicated the absolute value of the elements in the enclosed vector, and $\boldsymbol{\rho}$  to denote one or more random permutations of the associated vector.
+In equations 3-5, we use $\mathrm{max}$ to refer to the maximum value at each position in the vector, $\mathrm{med}$ to refer to the median of the vector, $\lvert~\rvert$ to indicated the absolute value of the elements in the enclosed vector, and $\boldsymbol{\rho}$  to denote one or more random permutations of the associated vector.
 
-Note that both the numerator and the denominator in equation 5 are  vectors, and that consequently we are calculating the ratio of the values element-wise. The numerator, $\vec{\delta}$, is simply the signed difference between the distributions in $\vec{a}$ and $\vec{b}$, and the denominator, $\vec{\sigma}$,  is the maximum absolute difference, a novel  estimate of the pooled dispersion of the distributions. The $\vec{\sigma}$ metric is necessary since there is no vector-wise dispersion estimate in common use.
+Note that both the numerator and the denominator in equation 5 are  vectors as is the result since we are calculating the ratio of the vector values element-wise. The numerator, $\vec{\delta}$, is simply the signed difference between the distributions in $\vec{a}$ and $\vec{b}$, and the denominator, $\vec{\sigma}$,  is the maximum absolute difference, a novel  estimate of the pooled dispersion of the distributions. The $\vec{\sigma}$ metric is necessary since there is no vector-wise dispersion estimate in common use.
 
-## Properties of the median of $\vec{\delta}$
+## Properties of the median of $\vec{\delta}$, MSD
 
 The midpoints of both $\vec{\delta}$ and $\vec{\sigma}$ have meaning, and are calculated by ALDEx2. The median of $\vec{\delta}$ is the median signed difference (MSD, `diff.btw` in ALDEX2)  and the median of $\vec{\sigma}$, or the median of the maximum absolute difference (MMAD), is the dispersion statistic `diff.win` returned by ALDEx2. The code contained in `R-block-2`, and Figure 2 shows the behaviour of the MSD  relative to the difference of means for three distributions as a measure of location. We can see that the two methods are essentially equivalent except in the case of a Cauchy distribution, where the difference in means clearly fails to provide an reliable estimate of location. Thus, the median of $\vec{\delta}$ is an efficient and safe choice to determine location regardless of the underlying distribution.
 
@@ -147,6 +131,18 @@ b.data <- function(fun, size, disn){
     }
     return(data)
 }
+
+b.data.summary <- function(fun, size, disn){
+	    data <- vector()
+        for(i in 1:1000){
+        a <- disn(size, 0, 1)
+        b <- disn(size, 1, 1)
+        ab <- fun(b) - fun(a)
+        data[i] <- ab - 1
+    }
+    return(data)
+}
+
 b.data.ru <- function(fun, size, disn){
     data <- vector()
         for(i in 1:1000){
@@ -157,30 +153,40 @@ b.data.ru <- function(fun, size, disn){
     }
     return(data)
 }
+b.data.ru.summary <- function(fun, size, disn){
+    data <- vector()
+        for(i in 1:1000){
+        a <- disn(size, 0, 1)
+        b <- disn(size, 1, 2)
+        ab <- fun(b) - fun(a)
+        data[i] <- ab - 1
+    }
+    return(data)
+}
 
 par(mfrow=c(1,3))
 # plot of residuals from the true difference
-boxplot(list(b.data(mean,10,rnorm), b.data(median,10,rnorm),
-   b.data(median,100,rnorm), b.data(median,100,rnorm),
-   b.data(median,1000,rnorm), b.data(median,1000,rnorm)),ylim=c(-2,2),
+boxplot(list(b.data.summary(mean,10,rnorm), b.data(median,10,rnorm),
+   b.data.summary(mean,100,rnorm), b.data(median,100,rnorm),
+   b.data.summary(mean,1000,rnorm), b.data(median,1000,rnorm)),ylim=c(-2,2),
    main="Normal distribution", names=c("10", "10", "100", "100",
    "1000", "1000"), col=c("red", "blue", "red","blue","red","blue"),
    border=c("red", "blue", "red","blue","red","blue"))
 abline(h=0, lty=2, col="grey")
 legend("topright",legend=c("Mean", "MSD"), pch=18, col=c("red","blue"))
 
-boxplot(list(b.data(mean,10,rcauchy), b.data(median,10,rcauchy),
-   b.data(mean,100,rcauchy), b.data(median,100,rcauchy),
-   b.data(mean,1000,rcauchy), b.data(median,1000,rcauchy)), ylim=c(-5,5),
+boxplot(list(b.data.summary(mean,10,rcauchy), b.data(median,10,rcauchy),
+   b.data.summary(mean,100,rcauchy), b.data(median,100,rcauchy),
+   b.data.summary(mean,1000,rcauchy), b.data(median,1000,rcauchy)), ylim=c(-5,5),
    main="Cauchy distribution", names=c("10", "10", "100", "100",
    "1000", "1000"), col=c("red", "blue", "red","blue","red","blue"),
    border=c("red", "blue", "red","blue","red","blue"))
 abline(h=0, lty=2, col="grey")
 
 legend("topright",legend=c("Mean", "MSD"), pch=18, col=c("red","blue"))
-boxplot(list(b.data.ru(mean,10,runif), b.data.ru(median,10,runif),
-   b.data.ru(mean,100,runif), b.data.ru(median,100,runif),
-   b.data.ru(mean,1000,runif), b.data.ru(median,1000,runif)), ylim=c(-1,1),
+boxplot(list(b.data.ru.summary(mean,10,runif), b.data.ru(median,10,runif),
+   b.data.ru.summary(mean,100,runif), b.data.ru(median,100,runif),
+   b.data.ru.summary(mean,1000,runif), b.data.ru(median,1000,runif)), ylim=c(-1,1),
    main="Uniform distribution", names=c("10", "10", "100", "100",
    "1000", "1000"), col=c("red", "blue", "red","blue","red","blue"),
    border=c("red", "blue", "red","blue","red","blue"))
@@ -197,9 +203,8 @@ legend("topright",legend=c("Mean", "MSD"), pch=18, col=c("red","blue"))
 # when getting the scale of one distribution x and y are the same distribution
 # when getting the pooled deviation of two distributions, x and y are
 # different distributions
-mmad <- function(x,y){
-  pmax(abs(x - sample(x)), abs(y - sample(y)))
-}
+# mmad function is zed.mmad from distEffect package
+
 ###############################
 ### Estimate the scaling factor
 # the number of samples that are needed to achieve the
@@ -215,7 +220,7 @@ colnames(scale.mat) = c("mmad", "sd")
 
 for(i in 1:ntest){
 a <- rnorm(dist.size, 0, 1)
-scale.mat[i,1] <- median(mmad(a,a))
+scale.mat[i,1] <-zed.mmad(a,a,mid=T)
 scale.mat[i,2] <- sd(a)
 }
 # scale factor
@@ -225,29 +230,31 @@ sd(scale.mat[,1]/scale.mat[,2])/ sqrt(nrow(scale.mat))
 
 ##############################
 ### Estimate efficiency
+### Takes forever!
+
 eff <- matrix(data=NA, nrow=100, ncol=2)
 colnames(eff) <- c("eff_mmad", "eff_mad")
 for(j in 1:100){
-ntest =1000
-dist.size = 1000
+	ntest =1000
+	dist.size = 1000
 
-diff.mat <-  matrix(data=NA, nrow=ntest, ncol=3)
+	diff.mat <-  matrix(data=NA, nrow=ntest, ncol=3)
 
-colnames(diff.mat) = c("mmad", "sd", "mad")
+	colnames(diff.mat) = c("mmad", "sd", "mad")
 
-for(i in 1:ntest){
-a <- rnorm(dist.size, 0, 1)
-diff.mat[i,1] <- median(mmad(a,a)) / 1.4183
-diff.mat[i,2] <- sd(a)
-diff.mat[i,3] <- mad(a)
+	for(i in 1:ntest){
+		a <- rnorm(dist.size, 0, 1)
+		diff.mat[i,1] <- zed.mmad(a,a, mid=T) / 1.4183
+		diff.mat[i,2] <- sd(a)
+		diff.mat[i,3] <- mad(a)
+	}
+
+	boxplot(diff.mat)
+	abline(h=1, lty=2, col="grey")
+
+	eff[j,1] <- 1/ (var(diff.mat[,1])/var(diff.mat[,2]))
+	eff[j,2] <- 1/ (var(diff.mat[,3])/var(diff.mat[,2]))
 }
-}
-boxplot(diff.mat)
-abline(h=1, lty=2, col="grey")
-
-eff[j,1] <- 1/ (var(diff.mat[,1])/var(diff.mat[,2]))
-eff[j,2] <- 1/ (var(diff.mat[,3])/var(diff.mat[,2]))
-
 # expected eff of mad
 mean(eff[,2])
 # expected eff of mmad
@@ -257,18 +264,15 @@ mean(eff[,1])
 
 The MMAD is a somewhat robust, and efficient estimator of scale. `R-block-3` shows the code used to support this, but is not run for efficiency since the number of random values needed to estimate with precision is extreme.
 
-We estimate that MMAD is $1.418 \pm 0.0001$ that of the standard deviation for a normal distribution. The efficiency of the  MMAD for estimating dispersion in a Normal distribution is 52\%, which compares favourably with that for the median absolute deviation (MAD) of 37\%. Thus, the MMAD requires, at most, double the sample size to determine dispersion at the same precision as the standard deviation. Finally, Figure 3 and `R-block-4` show the breakdown point of the MMAD for a Normal distribution. We can see that the expected value of the difference between two distributions is unchanged until 20\% of the observations in one sample are changed. This compares poorly with the MAD which has the maximum breakdown point of 50\%, but favourably with 0\% breakdown point of the standard deviation. We conclude that the MMAD and the median of $\vec{\delta}$, while not perfect, are reasonable measures of dispersion and difference for a broad array of distributions.
+We estimate that MMAD is $1.418 \pm 0.0001$ that of the standard deviation for a normal distribution. The efficiency of the  MMAD for estimating dispersion in a Normal distribution is 52\%, which compares favourably with that for the median absolute deviation (MAD) of 37\%. Thus, the MMAD requires, at most, double the sample size to determine dispersion at the same precision as the standard deviation. Finally, Figure 3 and `R-block-4` show the breakdown point of the MMAD for a Normal distribution. We can see that the expected value of the difference between two distributions is unchanged until 20\% of the observations in one sample are changed. This compares poorly with the MAD which has the maximum breakdown point of 50\%, but favourably with 0\% breakdown point of the standard deviation. We conclude that the MMAD and the MSD, while not perfect, are reasonable measures of dispersion and difference for a broad array of distributions.
 
 ```{r R-block-4, results="hide", eval=TRUE, echo=F, message=F, error=F, warnings=F, fig.cap="The breakdown point is the percent contamination that can be introduced into a distribution without changing the measure of scale. The breakdown point  of the MMAD is about 0.2, while the breakdown point of the standard deviation is 0. The vertical lines indicate the breakdown points."}
 
-# Med(maximum absolute deviation)
+# Med(maximum absolute deviation) zed.mmad
 # this is vectorized
 # when getting the scale of one distribution x and y are the same distribution
 # when getting the pooled deviation of two distributions, x and y are
 # different distributions
-mmad <- function(x,y){
-  pmax(abs(x - sample(x)), abs(y - sample(y)))
-}
 
 # BREAKDOWN
 # breakdown of mad is 50% as expected
@@ -288,32 +292,35 @@ a <- rep(1, dist.size)
 b <- a
 b[1:i] <- c[1:i]
 
-brk[i,1] <- median(mmad(a,a)) / 1.4184
-brk[i,2] <- median(mmad(b,b)) / 1.4184
+brk[i,1] <- zed.mmad(a,a,mid=T) / 1.4184
+brk[i,2] <- zed.mmad(b,b,mid=T) / 1.4184
 brk[i,3] <- sd(a)
 brk[i,4] <- sd(b)
 brk[i,5] <- mad(a)
 brk[i,6] <- mad(b)
 }
 
-par(mfrow=c(1,2))
-plot(brk[,2] - brk[1], ylab ="contam - orig", xlab="N contam",
+par(mfrow=c(1,3))
+plot(brk[,2] - brk[,1], ylab ="contam - orig", xlab="N contam",
     main="MMAD", pch=19, col=rgb(0,0,0,0.2))
 abline(v=200)
-plot(brk[,4] - brk[3], ylab ="contam - orig", xlab="N contam",
+plot(brk[,4] - brk[,3], ylab ="contam - orig", xlab="N contam",
     main="SD", pch=19, col=rgb(0,0,0,0.2))
 abline(v=1)
+plot(brk[,6] - brk[,5], ylab ="contam - orig", xlab="N contam",
+    main="MAD", pch=19, col=rgb(0,0,0,0.2))
+abline(v=500)
 
 ```
 
-## Comparing $\mathcal{E}_{d}$ and Cohen's d
+## Comparing $\mathbb{E}$ and Cohen's d
 
-Finally, we examine how $\mathcal{E}_{d}$ and Cohen's d compare when determining the standardized difference between two distributions. The code is shown in `R-block-5` and Figure 4 shows how the two statistics compare for Normal and Cauchy distributions, with an expected difference of 2 and a scale parameter of 1.
+Finally, we examine how $\mathbb{E}$ and Cohen's d compare when determining the standardized difference between two distributions. The code is shown in `R-block-5` and Figure 4 shows how the two statistics compare for Normal and Cauchy distributions, with an expected difference of 2 and a scale parameter of 1.
 
-Figure 4 shows that as expected Cohen's d had a standardized effect size that was distributed around the mean value of 2.0 when two Normal distributions were compared. The $\mathcal{E}_{d}$ standardized effect size was distributed around a mean value of 1.4, which is expected given that the denominator of $\mathcal{E}_{d}$ is 1.418 times larger than the pooled standard deviation of 1. Applying this correction, the standardized effect size for $\mathcal{E}_{d}$ would be 2.0, the same as Cohen's d for a Normal distribution. Thus as instantiated, the $\mathcal{E}_{d}$ is more conservative than Cohen's d, but can be easily scaled if needed. Scaling is not performed by default, since there is no guarantee that we are comparing Normal distributions in high throughput sequencing datasets.
+Figure 4 shows that as expected Cohen's d had a standardized effect size that was distributed around the mean value of 2.0 when two Normal distributions were compared. The $\mathbb{E}$ standardized effect size was distributed around a mean value of 1.4, which is expected given that the denominator of $\mathbb{E}$ is 1.418 times larger than the pooled standard deviation of 1. Applying this correction, the standardized effect size for $\mathbb{E}$ would be 2.0, the same as Cohen's d for a Normal distribution. Thus as instantiated, the $\mathbb{E}$ is more conservative than Cohen's d, but can be easily scaled if needed. Scaling is not performed by default, since there is no guarantee that we are comparing Normal distributions in high throughput sequencing datasets.
 
 
-```{r R-block-5, results="hide", eval=TRUE, echo=F, message=F, error=F, warnings=F, fig.cap="The standardized effect size of $\\mathcal{E}_{d}$ and Cohen's d (Cd) are compared for Normal and Cauchy distributions. The histograms plot one thousand random tests of the effect size for distributions of size 1000. The difference between the distributions was set at 2 with a scale parameter of 1 in each case."}
+```{r R-block-5, results="hide", eval=TRUE, echo=F, message=F, error=F, warnings=F, fig.cap="The standardized effect size of $\\mathcal{Z}$ and Cohen's d (Cd) are compared for Normal and Cauchy distributions. The histograms plot one thousand random tests of the effect size for distributions of size 1000. The difference between the distributions was set at 2 with a scale parameter of 1 in each case."}
 ##########
 # E_d vs Cohen's d for Normal and Cauchy Distribution
 ##########
@@ -327,26 +334,57 @@ for(i in 1:1000){
     c <- rnorm(1000, 3, 1)
     d <- rnorm(1000, 1, 1)
 
-    test.out[i,3] <- median( (a - b)/ (mmad(a,b)) )
+    test.out[i,3] <- zed.effect(a,b,mid=T)
     test.out[i,4] <- (mean(a) -mean(b)) / sqrt((var(a) + var(b))/2)
-    test.out[i,1] <- median( (c - d)/ (mmad(c,d)) )
+    test.out[i,1] <- zed.effect(c, d, mid=T)
     test.out[i,2] <- (mean(c) -mean(d)) / sqrt((var(c) + var(d))/2)
 }
+
 par(mfrow=c(2,2))
 hist(test.out[,2], main="Normal Cd", breaks=99, xlab="Difference")
-hist(test.out[,1], main=expression('Normal d'[NEF]), breaks=99, xlab="Difference")
+hist(test.out[,1], main='Normal Z', breaks=99, xlab="Difference")
 hist(test.out[,4], main="Cauchy Cd", breaks=99, xlab="Difference")
-hist(test.out[,3], main=expression('Cauchy d'[NEF]), breaks=99, xlab="Difference")
+hist(test.out[,3], main='Cauchy Z', breaks=99, xlab="Difference")
 ```
 
 
-The situation is very different when using the standardized effect size to compare two Cauchy distributions. Here the mean effect size for Cohen's d is 0.044, or almost no effect. Figure 4 shows that this distribution is bimodal, and the median standardized effect is 0.046. However, the $\mathcal{E}_{d}$ metric gives a mean standardized effect size of 0.58 and is symmetrically distributed over a comparatively narrow range.  Recall that Cauchy distributions have very broad tails, and so a scale of 1 with a Cauchy distribution will result in a considerably broader distribution than will a Normal distribution with the same scale, and consequently the standardized effect size should be smaller than observed with a Normal distribution with the same location and scale parameters.
+The situation is very different when using the standardized effect size to compare two Cauchy distributions. Here the mean effect size for Cohen's d is 0.044, or almost no effect. Figure 4 shows that this distribution is bimodal, and the median standardized effect is 0.046. However, the $\mathbb{E}$ metric gives a mean standardized effect size of 0.58 and is symmetrically distributed over a comparatively narrow range.  Recall that Cauchy distributions have very broad tails, and so a scale of 1 with a Cauchy distribution will result in a considerably broader distribution than will a Normal distribution with the same scale, and consequently the standardized effect size should be smaller than observed with a Normal distribution with the same location and scale parameters.
+
+\clearpage
+
+We can also examine the relationship between the effect size and the overlap between distributions, or more correctly the proportion of distribution 1 that is greater than the midpoint of distribution 2. This is reported in ALDEx2 as the `overlap'. In the case of Cohen's d, this follows a nice relationship that is derived from the Normal distribution, and the ideal relationship is plotted in the figure below as the red dotted line. 
+
+In the case of ALDEx2, we show the values for the individual points from the selex demonstration dataset. For the most part, the individual points fall nicely along the anticipated line, but become a little ragged at around $\mathcal{Zeta}$ 1.5-2 as we approach the tails of the distribution. We can also calculate the 95\% confidence interval for $\mathcal{Zeta}$, and the features where the CI does not cross 0 are identified by the blue dots. We can see that some features have large $\mathcal{Zeta}$ scores, but not consistent scores. This is because these features include  outliers that give the dispersion distribution a fat tail.
+
+This shows that the measure of effect size used here has similar distributional properties as does Cohen's d, and further cements the utility and interpretability of the metric.
+
+```{r R-overlap, results="hide", eval=TRUE, echo=F, message=F, error=F, warnings=F, fig.cap="Plot of $\\mathcal{Z}$  vs the distributional overlap. The red points indicate the ideal values for Cohen's d in a Normal distribution, the grey are points for the selex test dataset, and the blue points are points from this dataset where the 95% CI does not cross 0."}
+
+#https://www.andifugard.info/cohens-u1-u2-and-u3/
+
+library(ALDEx2)
+data(selex)
+conds <- c(rep('N',7), rep('S',7))
+x <- aldex.clr(selex, conds, mc.samples=128)
+x.e <- aldex.effect(x, CI=T)
+
+eff <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.2, 1.4, 1.6, 1.8, 2, 2.5, 3, 4)
+
+prob <- c(0.50,0.54,0.58,0.62,0.66,0.69,0.73,0.76,0.79,0.82,0.84,0.88,0.92,0.945,0.964,0.977,0.99,0.999,0.99997)
+
+ 
+plot(x.e$effect, 1-x.e$overlap, pch=19, col=rgb(0,0,0,0.2), xlim=c(0,5), xlab="Z", ylab="1 - overlap")
+points(eff, prob, col="red", pch=19, type='b')
+eff.stable <- which( x.e$effect.high > (x.e$effect.high - x.e$effect.low))
+
+points(x.e$effect[eff.stable], 1-x.e$overlap[eff.stable], pch=19, col='blue')
+```
 
 \clearpage
 
 ## The NULL model
 
-Figure 5 and associated code in `R-Block-dist` show the underlying distributions used in Figure 1 in the main paper. This figure shows the sahpe of the distributions used to determine the NULL model graphs. We show here a single random instance of the 40 x 40 comparison where the estimated $\mathcal{E}_{d}$ value is 1 in a Normal distribution.
+Figure 5 and associated code in `R-Block-dist` show the underlying distributions used in Figure 1 in the main paper. This figure shows the shape of the distributions used to determine the NULL model graphs. We show here a single random instance of the 40 x 40 comparison where the estimated $\mathbb{E}$ value is 1 in a Normal distribution.
 
 ```{r R-Block-dist, results="hide", eval=T, echo=F, message=F, error=F, warnings=F, fig.height=8, fig.width=8,  fig.cap="Example distributions. Random samples of size 40 were drawn from Normal (N), Uniform (U), Cauchy (C) or Beta (B) distributions. Distributions were either the base distribution (0), or perturbed by a small amount (1). Distribtions pairs are color coded using the same colors as in Figure 1 in the main manuscript."}
 ## dataset
@@ -381,7 +419,7 @@ stripchart(r.list, ylim=c(-4,6), vertical =T, method="jitter", pch=19,
 
 # The yeast transcriptome dataset
 
-The main manuscript shows the results for a well-described transcriptome dataset from a SNF1 \emph{Saccharomyces cerevisae} gene knockout with a cutoff of $\mathcal{E}_{d} > 1 \mathrm{\ or\ } 2$. Later we expand on this analysis and show a similar analyses from a 16S rRNA gene sequencing experiment in a Chinese population.
+The main manuscript shows the results for a well-described transcriptome dataset from a SNF1 \emph{Saccharomyces cerevisae} gene knockout with a cutoff of $\mathcal{Z} > 1 \mathrm{\ or\ } 2$. Later we expand on this analysis and show a similar analyses from a 16S rRNA gene sequencing experiment in a Chinese population.
 
 ## p-value based approaches
 
@@ -401,15 +439,15 @@ r3 <- c("edgeR","et & T>1","6349","448")
 r3 <- c("edgeR","et & T>2","6349","101")
 r4 <- c("ALDEx2","Wilcox","6236","4318")
 r5 <- c("ALDEx2","Welch's","6236","4352")
-r6 <- c("ALDEx2","$\\mathcal{E}_{d}$ > 1","6236","2020")
-r7 <- c("ALDEx2","$\\mathcal{E}_{d}$ > 2","6236","545")
+r6 <- c("ALDEx2","$\\mathcal{Z}$ > 1","6236","2020")
+r7 <- c("ALDEx2","$\\mathcal{Z}$ > 2","6236","545")
 
 tab.data <- rbind(head,r1,r2,r3,r4,r5,r6,r7)
 kable(tab.data, row.names=F, caption="TP set by method.")
 
 ```
 
-Following the original report, we used the set of genes identified by each tool with the full set of samples as the gold standard set. Table 1 shows the number of significant genes by each method. We can see that the edgeR methods and the ALDEx2 p-value based methods return similar sets of genes at an FDR cutoff of $q < 0.05$. In fact, the different toolsets return almost the same set of genes, with 4060 of the genes being found by the four the p-value based approaches. The two $\mathcal{E}_{d}$ cutoffs return a  subset of the p-value based core set.  Note that filtering by p-value and fold-change is extraordinarily restrictive: only 101 genes pass the p-value filter and a Threshold of > 2 as defined in Gierlinski et al [-@Gierlinski:2015aa], and indeed, the Threshold of > 2 is all that is needed to identify that set of 101 genes in this dataset.
+Following the original report, we used the set of genes identified by each tool with the full set of samples as the gold standard set. Table 1 shows the number of significant genes by each method. We can see that the edgeR methods and the ALDEx2 p-value based methods return similar sets of genes at an FDR cutoff of $q < 0.05$. In fact, the different toolsets return almost the same set of genes, with 4060 of the genes being found by the four the p-value based approaches. The two $\mathbb{E}$ cutoffs return a  subset of the p-value based core set.  Note that filtering by p-value and fold-change is extraordinarily restrictive: only 101 genes pass the p-value filter and a Threshold of > 2 as defined in Gierlinski et al [-@Gierlinski:2015aa], and indeed, the Threshold of > 2 is all that is needed to identify that set of 101 genes in this dataset.
 
 
 \clearpage
@@ -436,7 +474,7 @@ plot.FP.density(ret.list_11, ref.set.ty, pos=c(1,4,6,8), main="E=1, D=2", leg=T)
 
 We reproduce the analyses in a 16S rRNA gene sequencing dataset [@bian:2017]. Here we compared microbial composition of the 8-12 year old cohort (161 samples) to the young soldier cohort (211 samples) using the OTU count table published as supplement to the paper.  As before, 100 ALDEx2 instances were conducted to identify the set of OTUs that are found reproducibly. Data derived from 16S rRNA gene sequencing of communities is similar in many ways to transcriptome data, but are inherently noisier and generally sparser than transcriptome data [@fernandes:2014;@gloorAJS:2016;@gloorFrontiers:2017]. Thus, these data provide an independent test of the generality of the conclusions outlined above.
 
-We first replicate Figure 2 of the main manuscript using $\mathcal{E}_{d} > 1 \mathrm{, and} > 1$, and the results are shown in Figure 6 and the code is in code block `R-Block-ty-fptp`. Large effect sizes are uncommon in microbiome datasets [@Falony:2016aa;@Tsilimigras:2016aa] because the dispersion is extreme as shown in Figure 7. The code for this is contained in `R-block-ty-volcano`.
+We first replicate Figure 2 of the main manuscript using $\mathcal{Z} > 1 \mathrm{, and} > 1$, and the results are shown in Figure 6 and the code is in code block `R-Block-ty-fptp`. Large effect sizes are uncommon in microbiome datasets [@Falony:2016aa;@Tsilimigras:2016aa] because the dispersion is extreme as shown in Figure 7. The code for this is contained in `R-block-ty-volcano`.
 
 The left panel in Figure 7 shows the relationship between dispersion (diff.win from ALDEx2) and relative abundance (rab.all from ALDEx2) for the yeast transcriptome and the 16S rRNA gene sequencing dataset. Tthe transcriptome dataset has a strong relationship, where the most abundant transcripts tend to have extremely low dispersion, and the rarest features (those near the low-count margin) have the greatest dispersion.  In contrast, the relationship between abundance and dispersion is nearly uncoupled in the 16S rRNA gene sequencing dataset.
 
@@ -484,15 +522,15 @@ abline(0,-1, col="grey", lwd=2)
 
 \clearpage
 
-Finally, `R-block-how-many` and Figure 8 shows the TP-FP characteristics of the two real datasets and the simulated datasets. For this we superimposed the 99th percentile of effect sizes from subsets of the 16S rRNA gene sequencing dataset or form the transcriptome dataset where comparison groups were randomly sampled from the same group. Thus, this analysis accounts for biological and sampling variation, and the simulated datasets include only sampling variation. The $\mathcal{E}_{d}$ values for the randomly sub-sampled data were computed in two ways. First, using the clr-transformed point estimates of the data, and second using the clr-transformed Bayesian posterior distributions of the data. No difference between group was expected. We see that the point estimate values from the real data overlap almost exactly with the point estimate values from the simulated data, indicating that the simulated data is a good proxy for the actual biological data. Interestingly, the 99th percentile of $\mathcal{E}_{d}$ derived from the expected value of the Bayesian posterior estimate is significantly more conservative than the point-estimate derived statistic. In this case, $\mathcal{E}_{d}$ values of 2 or more are likely reasonable regardless of the sample size or dataset, and using a cutoff of $\mathcal{E}_{d}$ of 1 is likely to be a safe threshold as long as the sample size per group is at least 10.
+Finally, `R-block-how-many` and Figure 8 shows the TP-FP characteristics of the two real datasets and the simulated datasets. For this we superimposed the 99th percentile of effect sizes from subsets of the 16S rRNA gene sequencing dataset or form the transcriptome dataset where comparison groups were randomly sampled from the same group. Thus, this analysis accounts for biological and sampling variation, and the simulated datasets include only sampling variation. The $\mathbb{E}$ values for the randomly sub-sampled data were computed in two ways. First, using the clr-transformed point estimates of the data, and second using the clr-transformed Bayesian posterior distributions of the data. No difference between group was expected. We see that the point estimate values from the real data overlap almost exactly with the point estimate values from the simulated data, indicating that the simulated data is a good proxy for the actual biological data. Interestingly, the 99th percentile of $\mathbb{E}$ derived from the expected value of the Bayesian posterior estimate is significantly more conservative than the point-estimate derived statistic. In this case, $\mathbb{E}$ values of 2 or more are likely reasonable regardless of the sample size or dataset, and using a cutoff of $\mathbb{E}$ of 1 is likely to be a safe threshold as long as the sample size per group is at least 10.
 
 
-```{r R-block-how-many, echo=F, eval=T, fig.height=7, fig.width=10, fig.cap="The proportion of features that have an effect size $\\mathcal{E}_{d}$ as a function of per-group sample size when there is known to be no true effect. The line graphs show plots of the same data as in Figure 1; these are the 99th percentile effect sizes from Normal, Cauchy, Uniform and Beta random distributions. The boxplots overlay the 99th percentile effect sizes from subsets of the 16S rRNA gene sequencing dataset or the transcriptome dataset where groups were randomly sampled from the same group, and thus no difference between group was expected. Sample sizes were chosen up to a maximum of one half the total number of samples per group. The plots show boxplots of the 99th percentile of the effect size of 100 subsets per sample size. "}
+```{r R-block-how-many, echo=F, eval=T, fig.height=7, fig.width=10, fig.cap="The proportion of features that have an effect size $\\mathcal{Z}$ as a function of per-group sample size when there is known to be no true effect. The line graphs show plots of the same data as in Figure 1; these are the 99th percentile effect sizes from Normal, Cauchy, Uniform and Beta random distributions. The boxplots overlay the 99th percentile effect sizes from subsets of the 16S rRNA gene sequencing dataset or the transcriptome dataset where groups were randomly sampled from the same group, and thus no difference between group was expected. Sample sizes were chosen up to a maximum of one half the total number of samples per group. The plots show boxplots of the 99th percentile of the effect size of 100 subsets per sample size. "}
 
-load("data/null.set.effect.Rdata")
-load("data/null.set.ty.effect.Rdata")
-load("data/null.set.ty.single.effect.RData")
-load("data/list.null.Rdata")
+load("~/Documents/0_git/effect/data/null.set.effect.Rdata")
+load("~/Documents/0_git/effect/data/null.set.ty.effect.Rdata")
+load("~/Documents/0_git/effect/data/null.set.ty.single.effect.RData")
+load("~/Documents/0_git/effect/data/list.null.Rdata")
 
 seq.test <- c(2,3,5,10,15,20,30,50,100)
 
